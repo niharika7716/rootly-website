@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rootly is a concept for affordable smart plant care using soil-moisture monitoring and automated watering." />
+  <title>Rootly | Smart Care. Happier Plants.</title>
+  <style>
+    :root {
+      --forest: #173f32;
+      --green: #2f7655;
+      --leaf: #8bbf75;
+      --mint: #eaf3e8;
+      --cream: #fbfaf5;
+      --ink: #20312a;
+      --muted: #68766e;
+      --line: #dce6dc;
+      --white: #fff;
+      --shadow: 0 18px 50px rgba(26, 62, 46, .10);
+      --radius: 24px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; color: var(--ink); background: var(--cream);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: auto; }
+    .nav {
+      position: sticky; top: 0; z-index: 20; backdrop-filter: blur(14px);
+      background: rgba(251,250,245,.88); border-bottom: 1px solid rgba(220,230,220,.8);
+    }
+    .nav-inner { height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 850; letter-spacing: .08em; color: var(--forest); font-size: 1.25rem; }
+    .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 12px; background: var(--forest); color: white; font-size: 20px; }
+    .nav-links { display: flex; align-items: center; gap: 28px; color: #52645a; font-size: .94rem; }
+    .nav-links a:hover { color: var(--green); }
+    .btn {
+      border: 0; border-radius: 999px; padding: 13px 21px; display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; font-weight: 750; transition: .2s ease;
+    }
+    .btn-primary { background: var(--forest); color: white; box-shadow: 0 8px 20px rgba(23,63,50,.18); }
+    .btn-primary:hover { background: var(--green); transform: translateY(-2px); }
+    .btn-light { background: white; color: var(--forest); border: 1px solid var(--line); }
+    .btn-light:hover { border-color: var(--green); transform: translateY(-2px); }
+    .hero { padding: 76px 0 78px; overflow: hidden; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 54px; align-items: center; }
+    .eyebrow { color: var(--green); font-weight: 800; letter-spacing: .14em; text-transform: uppercase; font-size: .76rem; }
+    h1 { color: var(--forest); font-size: clamp(2.7rem, 5vw, 4.8rem); line-height: 1.04; letter-spacing: -.055em; margin: 16px 0 22px; }
+    h1 span { color: var(--green); }
+    .hero p { color: var(--muted); font-size: 1.1rem; max-width: 560px; }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 30px; }
+    .micro-note { color: #7a877f; font-size: .82rem !important; margin-top: 18px; }
+    .hero-art {
+      min-height: 430px; position: relative; border-radius: 36px; background: linear-gradient(145deg,#e4efdf,#f5f3e8);
+      display: grid; place-items: center; overflow: hidden;
+    }
+    .sun { position: absolute; width: 180px; height: 180px; border-radius: 50%; background: #f5d995; top: 38px; right: 38px; opacity: .75; }
+    .plant-pot { position: relative; width: 220px; height: 190px; margin-top: 150px; border-radius: 22px 22px 58px 58px; background: linear-gradient(90deg,#b96f48,#d89163 55%,#b96f48); box-shadow: 0 25px 30px rgba(72,68,43,.15); }
+    .plant-pot:before { content: ""; position: absolute; top: -14px; left: -10px; width: 240px; height: 28px; border-radius: 14px; background: #e5a779; }
+    .stem { position: absolute; width: 9px; height: 190px; background: #47784c; bottom: 155px; left: 106px; border-radius: 10px; transform: rotate(4deg); }
+    .leaf { position: absolute; width: 90px; height: 48px; background: #4f8d5c; border-radius: 90px 5px 90px 5px; transform-origin: bottom right; }
+    .leaf.one { bottom: 270px; left: 38px; transform: rotate(22deg); }
+    .leaf.two { bottom: 315px; left: 110px; transform: rotate(-28deg) scaleX(-1); background: #75a96c; }
+    .leaf.three { bottom: 225px; left: 120px; transform: rotate(-18deg) scaleX(-1); background: #3f7b51; }
+    .leaf.four { bottom: 350px; left: 55px; transform: rotate(35deg); background: #8ab977; width: 72px; }
+    .sensor { position: absolute; width: 14px; height: 90px; background: #f3f4e8; border: 2px solid #a4b59d; border-radius: 10px; left: 40px; top: 68px; }
+    .sensor:after { content: ""; position: absolute; width: 5px; height: 25px; bottom: -22px; left: 3px; background: #9eaa90; }
+    .floating-card { position: absolute; background: rgba(255,255,255,.92); border: 1px solid white; box-shadow: var(--shadow); border-radius: 18px; padding: 13px 16px; }
+    .float-top { top: 34px; left: 28px; }
+    .float-bottom { right: 24px; bottom: 32px; }
+    .float-label { color: var(--muted); font-size: .72rem; }
+    .float-value { color: var(--forest); font-size: 1.15rem; font-weight: 850; }
+    .section { padding: 82px 0; }
+    .section-soft { background: #f0f5ed; }
+    .section-head { max-width: 650px; margin: 0 auto 42px; text-align: center; }
+    .section-head h2 { color: var(--forest); font-size: clamp(2rem,3vw,3rem); line-height: 1.1; letter-spacing: -.04em; margin: 12px 0; }
+    .section-head p { color: var(--muted); margin: 0; }
+    .steps, .features { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+    .step, .feature { background: white; padding: 26px; border: 1px solid var(--line); border-radius: var(--radius); }
+    .step-num { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; background: var(--mint); color: var(--green); font-weight: 900; }
+    .step h3, .feature h3 { color: var(--forest); margin: 18px 0 8px; }
+    .step p, .feature p { color: var(--muted); font-size: .94rem; margin: 0; }
+    .icon { font-size: 1.6rem; }
+    .demo-shell { background: white; border: 1px solid var(--line); border-radius: 28px; box-shadow: var(--shadow); padding: 28px; }
+    .demo-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    .demo-head h3 { margin: 0; color: var(--forest); font-size: 1.45rem; }
+    .demo-head p { margin: 4px 0 0; color: var(--muted); font-size: .9rem; }
+    .demo-tag { background: #fff4d9; color: #80601a; border-radius: 999px; padding: 7px 12px; font-size: .75rem; font-weight: 800; white-space: nowrap; }
+    .plant-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 15px; }
+    .plant-card { background: #fbfcf9; border: 1px solid var(--line); border-radius: 20px; padding: 19px; }
+    .plant-top { display: flex; justify-content: space-between; align-items: center; }
+    .plant-emoji { font-size: 2rem; }
+    .status { font-size: .72rem; font-weight: 800; padding: 5px 9px; border-radius: 999px; background: #e5f2e4; color: #36734b; }
+    .status.low { background: #fff0df; color: #a45c20; }
+    .plant-card h4 { color: var(--forest); margin: 12px 0 2px; }
+    .plant-card small { color: var(--muted); }
+    .moisture-row { display: flex; justify-content: space-between; margin: 17px 0 7px; font-size: .82rem; }
+    .moisture-row strong { color: var(--forest); }
+    .bar { height: 9px; border-radius: 99px; background: #e7eee5; overflow: hidden; }
+    .bar span { display: block; height: 100%; width: 60%; background: #6da875; border-radius: inherit; transition: width .4s; }
+    .plant-card .btn { width: 100%; padding: 9px 12px; margin-top: 16px; font-size: .82rem; }
+    .demo-controls { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 20px; margin-top: 22px; }
+    .toggle-wrap { display: flex; align-items: center; gap: 11px; color: var(--forest); font-weight: 750; }
+    .switch { width: 48px; height: 27px; background: #bdc9bd; border: 0; border-radius: 99px; padding: 3px; transition: .2s; }
+    .switch:after { content: ""; display: block; width: 21px; height: 21px; border-radius: 50%; background: white; transition: .2s; }
+    .switch.active { background: var(--green); }
+    .switch.active:after { transform: translateX(21px); }
+    #demo-message { color: var(--muted); font-size: .85rem; min-height: 1.4em; }
+    .audience { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .audience-card { border-radius: 26px; padding: 30px; background: white; border: 1px solid var(--line); }
+    .audience-card h3 { color: var(--forest); margin: 12px 0 8px; }
+    .audience-card p { color: var(--muted); margin: 0; }
+    .price-band { background: var(--forest); color: white; border-radius: 30px; padding: 38px; display: flex; align-items: center; justify-content: space-between; gap: 25px; }
+    .price-band h2 { font-size: clamp(1.8rem,3vw,2.6rem); margin: 5px 0; letter-spacing: -.04em; }
+    .price-band p { color: #d4e3d6; margin: 0; }
+    .price { font-size: 2.4rem; font-weight: 900; white-space: nowrap; }
+    .price small { display: block; font-size: .76rem; font-weight: 500; color: #c7d8ca; text-align: right; }
+    .faq { max-width: 800px; margin: auto; }
+    details { border-bottom: 1px solid var(--line); padding: 18px 2px; }
+    summary { color: var(--forest); font-weight: 800; cursor: pointer; }
+    details p { color: var(--muted); margin-bottom: 0; }
+    .cta { text-align: center; background: #e9f1e5; border-radius: 30px; padding: 55px 25px; }
+    .cta h2 { color: var(--forest); font-size: clamp(2rem,4vw,3.2rem); margin: 0 0 12px; letter-spacing: -.04em; }
+    .cta p { color: var(--muted); max-width: 580px; margin: 0 auto 24px; }
+    footer { background: #123329; color: #dce9dd; padding: 35px 0; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+    footer .brand { color: white; }
+    footer p { color: #b8cbbd; font-size: .82rem; margin: 8px 0 0; }
+    .disclaimer { font-size: .76rem; color: #c3d3c7; max-width: 520px; }
+    @media (max-width: 800px) {
+      .nav-links { display: none; }
+      .hero { padding-top: 45px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+      .hero-art { min-height: 390px; }
+      .steps, .features, .plant-grid { grid-template-columns: 1fr; }
+      .audience { grid-template-columns: 1fr; }
+      .price-band { align-items: flex-start; flex-direction: column; }
+      .price small { text-align: left; }
+      .demo-head { flex-direction: column; }
+    }
+    @media (max-width: 430px) {
+      .wrap { width: min(100% - 28px, 1120px); }
+      .nav-inner { height: 66px; }
+      .nav-inner > .btn { padding: 10px 14px; font-size: .82rem; }
+      .hero-art { min-height: 340px; }
+      .plant-pot { transform: scale(.82); }
+      .leaf.one { bottom: 250px; }
+      .leaf.two { bottom: 290px; }
+      .leaf.three { bottom: 215px; }
+      .leaf.four { bottom: 320px; }
+      .sensor { top: 78px; }
+      .section { padding: 62px 0; }
+      .demo-shell { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#home"><span class="brand-mark">🌱</span> ROOTLY</a>
+      <div class="nav-links">
+        <a href="#how">How it works</a><a href="#features">Features</a><a href="#demo">Live demo</a><a href="#about">About</a>
+      </div>
+      <a class="btn btn-primary" href="#demo">Explore prototype <span>↗</span></a>
+    </div>
+  </nav>
+
+  <main id="home">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">Smart plant care, made simple</div>
+          <h1>Never miss a <span>watering day</span> again.</h1>
+          <p>Meet Rootly, an affordable smart-watering concept designed to help you care for your plants, even when life gets busy.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#how">Discover Rootly <span>→</span></a>
+            <a class="btn btn-light" href="#demo">Try the demo</a>
+          </div>
+          <p class="micro-note">Designed to work with the pots you already own. No smart planter replacement needed.</p>
+        </div>
+        <div class="hero-art" aria-label="Illustration of a potted plant with a moisture sensor">
+          <div class="sun"></div><div class="floating-card float-top"><div class="float-label">Soil moisture</div><div class="float-value">68% <span style="color:#4d9361">●</span></div></div>
+          <div class="leaf one"></div><div class="leaf two"></div><div class="leaf three"></div><div class="leaf four"></div><div class="stem"></div><div class="sensor"></div><div class="plant-pot"></div>
+          <div class="floating-card float-bottom"><div class="float-label">Rootly status</div><div class="float-value">Plant looking good 🌿</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" id="how">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">How Rootly works</div>
+          <h2>Three simple steps.<br>Smarter plant care.</h2>
+          <p>Rootly is designed as a retrofit kit that brings moisture-aware watering to your existing plant pots.</p>
+        </div>
+        <div class="steps">
+          <article class="step"><div class="step-num">01</div><h3>Sense</h3><p>A soil-moisture sensor checks the moisture level around your plant's roots.</p></article>
+          <article class="step"><div class="step-num">02</div><h3>Respond</h3><p>When the soil needs water, the controller can activate a small pump to deliver water through a tube.</p></article>
+          <article class="step"><div class="step-num">03</div><h3>Stay connected</h3><p>A companion app concept lets you monitor moisture, control watering and receive useful alerts.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Thoughtful features</div>
+          <h2>Little signals. Better plant care.</h2>
+          <p>Designed around the everyday needs of people who love plants but don't always have time for plant routines.</p>
+        </div>
+        <div class="features">
+          <article class="feature"><div class="icon">💧</div><h3>Moisture monitoring</h3><p>Keep an eye on soil moisture levels instead of relying only on guesswork.</p></article>
+          <article class="feature"><div class="icon">⚙️</div><h3>Automatic watering</h3><p>A pump-based watering concept responds when the soil reaches a set moisture threshold.</p></article>
+          <article class="feature"><div class="icon">📱</div><h3>App-based control</h3><p>View plant status, switch watering modes and receive alerts from a companion app concept.</p></article>
+          <article class="feature"><div class="icon">🪴</div><h3>Fits existing pots</h3><p>Keep your favourite planters. Rootly is envisioned as an add-on, not a planter replacement.</p></article>
+          <article class="feature"><div class="icon">🔔</div><h3>Helpful alerts</h3><p>Get notified about low reservoir levels or when a plant may need attention.</p></article>
+          <article class="feature"><div class="icon">🌍</div><h3>Mindful water use</h3><p>Moisture-led watering aims to reduce unnecessary watering and support responsible plant care.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" id="demo">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Interactive concept preview</div>
+          <h2>Step inside the Rootly dashboard.</h2>
+          <p>Try the sample controls below. This is a simulated interface using demonstration data, not a connection to physical sensors.</p>
+        </div>
+        <div class="demo-shell">
+          <div class="demo-head">
+            <div><h3>My Plants <span style="font-size:1rem">🌿</span></h3><p>Your little green corner, at a glance.</p></div>
+            <span class="demo-tag">PROTOTYPE SIMULATION</span>
+          </div>
+          <div class="plant-grid">
+            <article class="plant-card" data-plant="0">
+              <div class="plant-top"><span class="plant-emoji">🪴</span><span class="status">Healthy</span></div>
+              <h4>Monstera</h4><small>Living room</small>
+              <div class="moisture-row"><span>Soil moisture</span><strong class="moisture-value">68%</strong></div>
+              <div class="bar"><span style="width:68%"></span></div>
+              <button class="btn btn-light water-btn">Water now</button>
+            </article>
+            <article class="plant-card" data-plant="1">
+              <div class="plant-top"><span class="plant-emoji">🌿</span><span class="status low">Needs attention</span></div>
+              <h4>Peace Lily</h4><small>Work desk</small>
+              <div class="moisture-row"><span>Soil moisture</span><strong class="moisture-value">28%</strong></div>
+              <div class="bar"><span style="width:28%;background:#d99a53"></span></div>
+              <button class="btn btn-light water-btn">Water now</button>
+            </article>
+            <article class="plant-card" data-plant="2">
+              <div class="plant-top"><span class="plant-emoji">🌵</span><span class="status">Healthy</span></div>
+              <h4>Mini Cactus</h4><small>Study table</small>
+              <div class="moisture-row"><span>Soil moisture</span><strong class="moisture-value">54%</strong></div>
+              <div class="bar"><span style="width:54%"></span></div>
+              <button class="btn btn-light water-btn">Water now</button>
+            </article>
+          </div>
+          <div class="demo-controls">
+            <div class="toggle-wrap"><button class="switch active" id="autoSwitch" aria-label="Toggle automatic mode" aria-pressed="true"></button><span>Automatic watering mode</span></div>
+            <button class="btn btn-primary" id="refreshBtn">↻ Refresh readings</button>
+          </div>
+          <p id="demo-message" role="status">Automatic mode is ON. Sample moisture readings are displayed.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Who it's for</div>
+          <h2>Made for plant people with full calendars.</h2>
+          <p>Rootly focuses on people who want greener spaces without adding another daily task to their schedule.</p>
+        </div>
+        <div class="audience">
+          <article class="audience-card"><div class="icon">🧑‍💻</div><h3>Busy professionals & travellers</h3><p>For plant owners who work long hours, travel frequently or sometimes forget regular watering.</p></article>
+          <article class="audience-card"><div class="icon">🏢</div><h3>Offices & shared spaces</h3><p>For workplaces that maintain indoor plants and want a more manageable care routine.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft">
+      <div class="wrap">
+        <div class="price-band">
+          <div><div class="eyebrow" style="color:#b8d7b9">Our proposed starting price</div><h2>Smart care should feel accessible.</h2><p>Rootly's current proposed price for the concept kit.</p></div>
+          <div class="price">₹1,299<small>Proposed price · subject to validation</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">A few quick answers</div><h2>Rootly, clarified.</h2></div>
+        <div class="faq">
+          <details><summary>Does Rootly require a new smart pot?</summary><p>No. Rootly is designed as a retrofit kit that can be used with existing pots, subject to final compatibility testing.</p></details>
+          <details><summary>Is the product available to buy today?</summary><p>No. Rootly is currently a concept-stage prototype project. The hardware and app experience are under development and require further testing.</p></details>
+          <details><summary>Does this website connect to a real sensor?</summary><p>No. The dashboard above is an interactive simulation for demonstration. It uses sample values and does not control a pump or read live sensor data.</p></details>
+          <details><summary>What is the goal of Rootly?</summary><p>To make plant care easier and more water-conscious through affordable moisture monitoring and automated watering technology.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="cta">
+          <div class="eyebrow">ROOTLY</div>
+          <h2>Smart Care. Happier Plants.</h2>
+          <p>Less guesswork for you. A more thoughtful watering routine for your plants. That's the Rootly idea.</p>
+          <a class="btn btn-primary" href="#home">Back to top ↑</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <div><a class="brand" href="#home"><span class="brand-mark">🌱</span> ROOTLY</a><p>Smart Care. Happier Plants.</p></div>
+      <div class="disclaimer">Student venture prototype demonstration. Product features, compatibility, performance and proposed pricing are subject to development and validation. Dashboard readings are simulated.</div>
+      <div style="font-size:.8rem;color:#b8cbbd">© <span id="year"></span> Rootly</div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const autoSwitch = document.getElementById("autoSwitch");
+    const message = document.getElementById("demo-message");
+    let autoMode = true;
+    autoSwitch.addEventListener("click", () => {
+      autoMode = !autoMode;
+      autoSwitch.classList.toggle("active", autoMode);
+      autoSwitch.setAttribute("aria-pressed", String(autoMode));
+      message.textContent = `Automatic watering mode is now ${autoMode ? "ON" : "OFF"} (simulation only).`;
+    });
+
+    document.querySelectorAll(".water-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        const card = button.closest(".plant-card");
+        const value = card.querySelector(".moisture-value");
+        const bar = card.querySelector(".bar span");
+        const next = Math.min(100, Number.parseInt(value.textContent, 10) + 18);
+        value.textContent = `${next}%`;
+        bar.style.width = `${next}%`;
+        const status = card.querySelector(".status");
+        status.textContent = next < 35 ? "Needs attention" : "Healthy";
+        status.classList.toggle("low", next < 35);
+        message.textContent = `${card.querySelector("h4").textContent}: simulated watering complete. Moisture updated to ${next}%.`;
+      });
+    });
+
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      const readings = [68, 28, 54];
+      document.querySelectorAll(".plant-card").forEach((card, index) => {
+        const value = card.querySelector(".moisture-value");
+        const bar = card.querySelector(".bar span");
+        value.textContent = `${readings[index]}%`;
+        bar.style.width = `${readings[index]}%`;
+        const status = card.querySelector(".status");
+        const low = readings[index] < 35;
+        status.textContent = low ? "Needs attention" : "Healthy";
+        status.classList.toggle("low", low);
+      });
+      message.textContent = "Sample readings refreshed. These are demonstration values, not live sensor data.";
+    });
+  </script>
+</body>
+</html>
